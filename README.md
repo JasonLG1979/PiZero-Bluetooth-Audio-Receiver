@@ -111,6 +111,10 @@ Reload the systemd daemon:
 
 ```sudo systemctl daemon-reload```
 
+Enable the bluealsa.service:
+
+```sudo systemctl enable bluealsa.service```
+
 
 Create the ```bluealsa-aplay.service``` unit file:
 
