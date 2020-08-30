@@ -37,10 +37,18 @@ Add the bluealsa user to the audio group:
 
 ```sudo adduser bluealsa audio```
 
+Create a bt-agent group:
 
-Create an unprivileged bt-agent system user in the bluetooth group:
+```sudo addgroup --system bt-agent```
 
-```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluetooth bt-agent```
+
+Create an unprivileged bt-agent system user in the bt-agent group:
+
+```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bt-agent bt-agent```
+
+Add the bt-agent user to the bluetooth group:
+
+```sudo adduser bt-agent bluetooth```
 
 
 Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":
