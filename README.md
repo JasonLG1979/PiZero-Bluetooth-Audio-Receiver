@@ -15,11 +15,28 @@ The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth mo
 
 Install the packages needed:
 
- ```sudo apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools```
+ ```sudo apt install -y --no-install-recommends git alsa-base alsa-utils bluealsa bluez-tools```
+
+
+Clone the repo and cd into the repo's folder:
+
+```https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git & cd PiZero-Bluetooth-Audio-Receiver```
+
 
 Create the folder that will contain our sounds:
 
 ```sudo mkdir -p /usr/local/share/sounds/__custom```
+
+
+Copy the sounds to our new folder:
+
+```sudo cp files/device-added.wav /usr/local/share/sounds/__custom/```
+```sudo cp files/device-removed.wav /usr/local/share/sounds/__custom/```
+```sudo cp files/discoverable.wav.wav /usr/local/share/sounds/__custom/```
+
+cd back out of the folder and delete it (if you don't plan on contributing to the repo):
+
+```cd & rm -rf PiZero-Bluetooth-Audio-Receiver```
 
 
 Create a bluealsa group:
@@ -215,6 +232,7 @@ After=bt-agent.service
 
 [Service]
 Type=oneshot
+ExecStartPre=/usr/bin/aplay -q /usr/local/share/sounds/__custom/discoverable.wav
 ExecStart=/usr/bin/bluetoothctl discoverable on
 ExecStop=/usr/bin/bluetoothctl discoverable off
 RemainAfterExit=yes
@@ -250,9 +268,11 @@ Paste this into the file:
 if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 if [ "$action" = "add" ]; then
+    aplay -q /usr/local/share/sounds/__custom/device-added.wav
     systemctl stop bt-discovery.service
 fi
 if [ "$action" = "remove" ]; then
+    aplay -q /usr/local/share/sounds/__custom/device-removed.wav
     deviceinfo=$(bluetoothctl info)
     if [ "$deviceinfo" = "Missing device address argument" ]; then
         systemctl start bt-discovery.service
