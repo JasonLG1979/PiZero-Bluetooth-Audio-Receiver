@@ -31,8 +31,11 @@ Create the folder that will contain our sounds:
 Copy the sounds to our new folder:
 
 ```sudo cp files/device-added.wav /usr/local/share/sounds/__custom/```
+
 ```sudo cp files/device-removed.wav /usr/local/share/sounds/__custom/```
+
 ```sudo cp files/discoverable.wav.wav /usr/local/share/sounds/__custom/```
+
 
 cd back out of the folder and delete it (if you don't plan on contributing to the repo):
 
