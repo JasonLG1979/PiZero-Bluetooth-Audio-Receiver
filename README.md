@@ -246,7 +246,7 @@ fi
 Save and exit nano (ctrl+x, y, enter)
 
 
-Make set the proper permissions for the script:
+Set the proper permissions for the script:
 
 ```sudo chmod 755 /usr/local/bin/bluetooth-udev```
 
