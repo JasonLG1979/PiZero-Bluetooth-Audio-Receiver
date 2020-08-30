@@ -17,6 +17,10 @@ Install the packages needed:
 
  ```sudo apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools```
 
+Create the folder that will contain our sounds:
+
+```sudo mkdir -p /usr/local/share/sounds/__custom```
+
 
 Create a bluealsa group:
 
