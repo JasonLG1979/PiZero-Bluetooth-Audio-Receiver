@@ -112,6 +112,7 @@ Reload the systemd daemon:
 Create the ```bluealsa-aplay.service``` unit file:
 
 ```sudo nano /etc/systemd/system/bluealsa-aplay.service```
+
 Paste this into the file:
 ```
 [Unit]
@@ -144,7 +145,9 @@ Enable the bluealsa-aplay.service:
 
 
 Create the bt-agent service to enable "Just Works" bluetooth pairing:
+
 ```sudo nano /etc/systemd/system/bt-agent.service```
+
 Paste this into the file:
 ```
 [Unit]
@@ -183,6 +186,7 @@ Enable the bt-agent.service:
 Create the bt-discovery service to enabe discoverability at startup and be able to toggle it on and off with systemd:
 
 ```sudo nano /etc/systemd/system/bt-discovery.service```
+
 Paste this into the file:
 ```
 [Unit]
