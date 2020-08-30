@@ -17,31 +17,44 @@ Install the packages needed:
 
  ```sudo apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools```
 
+
+
 Create a bluealsa group:
 
 ```sudo addgroup --system bluealsa```
+
+
 
 Create an unprivileged bluealsa system user in the bluealsa group:
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluealsa bluealsa```
 
+
+
 Add the bluealsa user to the bluetooth group:
 
 ```sudo adduser bluealsa bluetooth```
+
+
 
 Add the bluealsa user to the audio group:
 
 ```sudo adduser bluealsa audio```
 
+
+
 Create an unprivileged bt-agent system user in the bluetooth group:
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluetooth bt-agent```
+
 
 Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":
 
 Change ```#Class = 0x000100``` to ```Class = 0x200428``` and ```#DiscoverableTimeout = 0``` to ```DiscoverableTimeout = 0```.
 
 Save and exit nano (ctrl+x, y, enter)
+
+
 
 Create an override for the bluetooth.service that disables unneeded plugins:
 
@@ -55,6 +68,8 @@ ExecStart=/usr/lib/bluetooth/bluetoothd  --noplugin=sap,network,hog,health,midi
 ```
 Save and exit nano (ctrl+x, y, enter)
 
+
+
 Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon.
 
 ```sudo nano /etc/dbus-1/system.d/bluealsa.conf```
@@ -62,6 +77,8 @@ Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa
 Change ```<policy user="root">``` to ```<policy user="bluealsa">```
 
 Save and exit nano (ctrl+x, y, enter)
+
+
 
 Override the bluealsa.service file:
 ```sudo systemctl edit --full bluealsa.service```
@@ -93,6 +110,8 @@ RestrictAddressFamilies=AF_UNIX AF_BLUETOOTH
 WantedBy=multi-user.target
 ```
 Save and exit nano (ctrl+x, y, enter)
+
+
 
 Reload the systemd daemon:
 
@@ -126,6 +145,8 @@ NoNewPrivileges=true
 WantedBy=multi-user.target
 ```
 Save and exit nano (ctrl+x, y, enter)
+
+
 
 Enable the bluealsa-aplay.service:
 
