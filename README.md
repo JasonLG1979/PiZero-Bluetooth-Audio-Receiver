@@ -264,4 +264,4 @@ Reboot:
 
 ```sudo reboot```
 
-Your Pi Zero should be discoverable and show up to other devices It's name will be whatever your Pi Zero's hostname is.
+Your Pi Zero should be discoverable and show up to other devices as a bluetooth audio receiver. It's name will be whatever your Pi Zero's hostname is.
