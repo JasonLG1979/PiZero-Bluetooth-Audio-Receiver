@@ -45,7 +45,7 @@ Create an unprivileged bt-agent system user in the bluetooth group:
 
 Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":
 
-```sudo nano etc/bluetooth/main.conf```
+```sudo nano /etc/bluetooth/main.conf```
  
 
 Change ```#Class = 0x000100``` to ```Class = 0x200428``` and ```#DiscoverableTimeout = 0``` to ```DiscoverableTimeout = 0```.
