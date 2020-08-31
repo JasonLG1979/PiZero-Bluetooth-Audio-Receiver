@@ -389,7 +389,7 @@ Reboot and enjoy!!!:
 These overclock setting WILL <b>void your warranty</b> and eat your cat(s). I am not responsible for any damages, demon possessions or unwanted pregnancies.
 
 
-That being said I've had good results with the following to elimenate audio dropouts with just a small heatsink and a case with no active cooling orventilation. (temps never got over 57c and it never throttled during a 60 min stress test) Your mileage may very of course.
+That being said I've had good results with the following to elimenate audio dropouts with just a small heatsink and a case with no active cooling or ventilation. (temps never got over 57c and it never throttled during a 60 min stress test) Your mileage may very of course.
 
 ```
 boot_delay=1
