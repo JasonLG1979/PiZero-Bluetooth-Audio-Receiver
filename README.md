@@ -53,7 +53,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluealsa bluealsa```
 
 
-<b>Add the bluealsa user to the Bluetooth group:</b>
+<b>Add the bluealsa user to the bluetooth group:</b>
 
 ```sudo adduser bluealsa bluetooth```
 
