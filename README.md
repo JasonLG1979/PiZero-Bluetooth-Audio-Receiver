@@ -1,16 +1,16 @@
 # PiZero-Bluetooth-Audio-Receiver
-## How to turn your Raspberry Pi Zero W into a bluetooth audio receiver.
+## How to turn your Raspberry Pi Zero W into a Bluetooth audio receiver.
 
 ### Objective
-The goal of this howto is to turn a Raspberry Pi Zero W into a headless bluetooth audio receiver utilizing it's onboard bluetooth module with packages available in the default repositories starting from a fresh Raspberry Pi OS Lite install. When complete your Pi Zero will function more or less like a simple bluetooth speaker. It will be discoverable when no device is connected and accept all pairing requests via "Just Works" Secure Simple Pairing. although several devices may be connected to it at a time only one may stream audio to it at a time.
+The goal of this how-to is to turn a Raspberry Pi Zero W into a headless Bluetooth audio receiver utilizing it's onboard Bluetooth module with packages available in the default repositories starting from a fresh Raspberry Pi OS Lite install. When complete your Pi Zero will function more or less like a simple Bluetooth speaker. It will be discoverable when no device is connected and accept all pairing requests via "Just Works" Secure Simple Pairing. Although several devices may be connected to it, only one may stream audio to it at a time.
 
 ### Expectations
-It is assumed that you have started from a fully updated, unmodified, and fresh Raspberry Pi OS Lite install, have shell access, at least very basic Linux knowledge and have some way of getting audio out of the Pi Zero. (the Pi Zero has no analog audio output) 
+It is assumed that you have started from a fully updated, unmodified, and fresh Raspberry Pi OS Lite install, have shell access, have very basic Linux knowledge and have some way of getting audio out of the Pi Zero. (The Pi Zero has no analog audio output) 
 
 ### Limitations
-The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth module is not the greatest, it is known to have wifi coexistence issues (you may experience audio dropouts with wifi enabled), it is not suitable for low latency aplications and the package used in this howto (bluealsa) only supports the SBC codec (no AAC, aptX*, or LDAC). If you're looking for an HD audiophile experience, this ain't it.
+The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth module is not the greatest, it is known to have Wi-Fi coexistence issues (you may experience audio dropouts with wifi enabled), it is not suitable for low latency aplications and the package used in this how-to (bluealsa) only supports the SBC codec (no AAC, aptX*, or LDAC). If you're looking for an HD audiophile experience, this ain't it.
 
-<i>*The dropout issue can sometimes be mitigated by disabling wifi and/or forcing turbo mode (the CPU will run full tilt all the time). Forcing turbo will however cause your Pi Zero to use more power and produce more heat. Under normal circumstances though heat is not a concern with a Pi Zero even with force turbo enabled.</i>
+<i>*The dropout issue can sometimes be mitigated by disabling Wi-Fi and/or forcing turbo mode (the CPU will run full tilt all the time). Forcing turbo will however cause your Pi Zero to use more power and produce more heat. Under normal circumstances though heat is not a concern with a Pi Zero even with force turbo enabled.</i>
 
 ### On with it then...
 
@@ -53,7 +53,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth mo
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluealsa bluealsa```
 
 
-<b>Add the bluealsa user to the bluetooth group:</b>
+<b>Add the bluealsa user to the Bluetooth group:</b>
 
 ```sudo adduser bluealsa bluetooth```
 
@@ -71,7 +71,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth mo
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bt-agent bt-agent```
 
-<b>Add the bt-agent user to the bluetooth group:</b>
+<b>Add the bt-agent user to the Bluetooth group:</b>
 
 ```sudo adduser bt-agent bluetooth```
 
@@ -202,7 +202,7 @@ Save and exit nano (ctrl+x, y, enter)
 ```sudo systemctl enable bluealsa-aplay.service```
 
 
-<b>Create the bt-agent service to enable "Just Works" bluetooth pairing:</b>
+<b>Create the bt-agent service to enable "Just Works" Bluetooth pairing:</b>
 
 ```sudo nano /etc/systemd/system/bt-agent.service```
 
@@ -325,12 +325,12 @@ Save and exit nano (ctrl+x, y, enter)
 
 ```sudo reboot```
 
-Your Pi Zero should be discoverable and show up to other devices as a bluetooth audio receiver. It's name will be whatever your Pi Zero's hostname is.
+Your Pi Zero should be discoverable and show up to other devices as a Bluetooth audio receiver. It's name will be whatever your Pi Zero's hostname is.
 
 
 ### Audio Setup
 
-Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to a value that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable cpu cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
+Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to a value that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable CPU cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
 
 An example output of ```aplay -l``` is here:
 ```
@@ -390,7 +390,7 @@ Reboot and enjoy!!!:
 These overclock setting WILL <b>void your warranty</b> and eat your cat(s). I am not responsible for any damages, demon possessions or unwanted pregnancies.
 
 
-That being said I've had good results with the following to elimenate audio dropouts with just a small heatsink and a case with no active cooling or ventilation. (temps never got over 57c and it never throttled during a 60 min stress test) Your mileage may very of course.
+That being said I've had good results with the following to eliminate audio dropouts with just a small heatsink and a case with no active cooling or ventilation. (Temps never got over 57c and it never throttled during a 60 min stress test, your mileage may vary of course.)
 
 ```
 boot_delay=1
