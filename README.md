@@ -21,7 +21,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 <b>Clone the repo and cd into the repo's folder:</b>
 
-```https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git & cd PiZero-Bluetooth-Audio-Receiver```
+```git clone https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git & cd PiZero-Bluetooth-Audio-Receiver```
 
 
 <b>Create the folder that will contain our sounds:</b>
