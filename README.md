@@ -22,7 +22,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 <b>Clone the repo and cd into the repo's folder:</b>
 
-```git clone https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git & cd PiZero-Bluetooth-Audio-Receiver```
+```git clone https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git && cd PiZero-Bluetooth-Audio-Receiver```
 
 
 <b>Create the folder that will contain our sounds:</b>
@@ -41,7 +41,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 <b>cd back out of the folder and delete it (if you don't plan on contributing to the repo):</b>
 
-```cd & rm -rf PiZero-Bluetooth-Audio-Receiver```
+```cd && rm -rf PiZero-Bluetooth-Audio-Receiver```
 
 
 <b>Create a bluealsa group:</b>
