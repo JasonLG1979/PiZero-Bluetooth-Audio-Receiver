@@ -329,7 +329,7 @@ Your Pi Zero should be discoverable and show up to other devices as a bluetooth 
 
 ### Audio Setup
 
-Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to values that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable cpu cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
+Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to a value that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable cpu cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
 
 An example output of ```aplay -l``` is here:
 ```
