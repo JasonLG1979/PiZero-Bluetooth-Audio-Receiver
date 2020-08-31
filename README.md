@@ -35,7 +35,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 ```sudo cp device-removed.wav /usr/local/share/sounds/__custom/```
 
-```sudo cp discoverable.wav.wav /usr/local/share/sounds/__custom/```
+```sudo cp discoverable.wav /usr/local/share/sounds/__custom/```
 
 
 <b>cd back out of the folder and delete it (if you don't plan on contributing to the repo):</b>
