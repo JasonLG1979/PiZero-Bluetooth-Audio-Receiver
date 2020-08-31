@@ -111,6 +111,11 @@ ExecStart=/usr/lib/bluetooth/bluetoothd  --noplugin=sap,network,hog,health,midi
 Save and exit nano (ctrl+x, y, enter)
 
 
+<b>Reload the systemd daemon:</b>
+
+```sudo systemctl daemon-reload```
+
+
 <b>Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon:</b>
 
 ```sudo nano /etc/dbus-1/system.d/bluealsa.conf```
