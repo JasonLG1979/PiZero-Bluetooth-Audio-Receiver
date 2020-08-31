@@ -1,7 +1,8 @@
 # PiZero-Bluetooth-Audio-Receiver
 ## How to turn your Raspberry Pi Zero W into a bluetooth audio receiver.
 
-The goal of this howto is to turn a Raspberry Pi Zero W into a headless bluetooth audio receiver utilizing it's onboard bluetooth module with packages available in the default repositories starting from a fresh Raspberry Pi OS Lite install.
+### Objective
+The goal of this howto is to turn a Raspberry Pi Zero W into a headless bluetooth audio receiver utilizing it's onboard bluetooth module with packages available in the default repositories starting from a fresh Raspberry Pi OS Lite install. When complete your Pi Zero will function more or less like a simple bluetooth speaker. It will be discoverable when no device is connected and accept all pairing requests via "Just Works" Secure Simple Pairing. although several devices may be connected to it at a time only one may stream audio to it at a time.
 
 ### Expectations
 It is assumed that you have started from a fully updated, unmodified, and fresh Raspberry Pi OS Lite install, have shell access, at least very basic Linux knowledge and have some way of getting audio out of the Pi Zero. (the Pi Zero has no analog audio output) 
