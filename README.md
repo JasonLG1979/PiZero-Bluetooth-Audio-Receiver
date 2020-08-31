@@ -367,7 +367,7 @@ To:
 ```defaults.pcm.card 1```
 
 
-And While you're at it if your card support 44.1 khz:
+While you're at it if your card support 44.1 khz:
 
 Change:
 
