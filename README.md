@@ -381,3 +381,22 @@ To prevent unnecessary upsampling.
 Reboot and enjoy!!!:
 
 ```sudo reboot```
+
+### Bonus Points!!!
+
+<b>!!!WARNING!!!</b>
+
+These overclock setting WILL <b>void your warranty</b> and eat your cat(s). I am not responsible for any damages, demon possessions or unwanted pregnancies.
+
+
+That being said I've had good results with the following to elimenate audio dropouts with just a small heatsink and a case with no active cooling orventilation. (temps never got over 57c and it never throttled during a 60 min stress test) Your mileage may very of course.
+
+```
+boot_delay=1
+force_turbo=1
+arm_freq=1100
+over_voltage=8
+sdram_over_voltage=8
+core_freq=500
+sdram_freq=500
+```
