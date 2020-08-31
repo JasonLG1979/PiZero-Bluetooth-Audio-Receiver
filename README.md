@@ -80,7 +80,18 @@ The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth mo
 ```sudo nano /etc/bluetooth/main.conf```
  
 
-Change ```#Class = 0x000100``` to ```Class = 0x200428``` and ```#DiscoverableTimeout = 0``` to ```DiscoverableTimeout = 0```.
+Change:
+
+```#Class = 0x000100```
+
+```#DiscoverableTimeout = 0```
+
+To:
+
+```Class = 0x200428```
+
+```DiscoverableTimeout = 0```
+
 
 Save and exit nano (ctrl+x, y, enter)
 
@@ -102,7 +113,13 @@ Save and exit nano (ctrl+x, y, enter)
 
 ```sudo nano /etc/dbus-1/system.d/bluealsa.conf```
 
-Change ```<policy user="root">``` to ```<policy user="bluealsa">```
+Change:
+
+```<policy user="root">```
+
+To:
+
+```<policy user="bluealsa">```
 
 Save and exit nano (ctrl+x, y, enter)
 
@@ -218,7 +235,7 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Enable the bt-agent.service:</b>
+<b>Enable the bt-agent service:</b>
 
 ```sudo systemctl enable bt-agent.service```
 
@@ -245,12 +262,12 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-<b>Enable the bt-discovery.service:</b>
+<b>Enable the bt-discovery service:</b>
 
 ```sudo systemctl enable bt-discovery.service```
 
 
-<b>Nuke the useless bthelper@.service:</b>
+<b>Nuke the useless bthelper service:</b>
 
 ```sudo systemctl disable bthelper@.service```
 
@@ -344,9 +361,9 @@ Change:
 
 To:
 
-```defaults.ctl.card 0```
+```defaults.ctl.card 1```
 
-```defaults.pcm.card 0```
+```defaults.pcm.card 1```
 
 
 And While you're at it if your card support 44.1 khz:
