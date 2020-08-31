@@ -107,7 +107,7 @@ Change ```<policy user="root">``` to ```<policy user="bluealsa">```
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Override the bluealsa.service file:</b>
+<b>Override the bluealsa service:</b>
 
 ```sudo systemctl edit --full bluealsa.service```
 
@@ -149,7 +149,7 @@ Save and exit nano (ctrl+x, y, enter)
 ```sudo systemctl enable bluealsa.service```
 
 
-<b>Create the ```bluealsa-aplay.service```:</b>
+<b>Create the bluealsa-aplay service:</b>
 
 ```sudo nano /etc/systemd/system/bluealsa-aplay.service```
 
@@ -179,7 +179,7 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Enable the bluealsa-aplay.service:</b>
+<b>Enable the bluealsa-aplay service:</b>
 
 ```sudo systemctl enable bluealsa-aplay.service```
 
@@ -250,7 +250,7 @@ WantedBy=multi-user.target
 ```sudo systemctl enable bt-discovery.service```
 
 
-<b>Nuke the useless ```bthelper@.service```:</b>
+<b>Nuke the useless bthelper@.service:</b>
 
 ```sudo systemctl disable bthelper@.service```
 
@@ -308,3 +308,59 @@ Save and exit nano (ctrl+x, y, enter)
 ```sudo reboot```
 
 Your Pi Zero should be discoverable and show up to other devices as a bluetooth audio receiver. It's name will be whatever your Pi Zero's hostname is.
+
+
+### Audio Setup
+
+Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to values that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable cpu cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
+
+An example output of ```aplay -l``` is here:
+```
+**** List of PLAYBACK Hardware Devices ****
+card 0: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
+  Subdevices: 8/8
+  Subdevice #0: subdevice #0
+  Subdevice #1: subdevice #1
+  Subdevice #2: subdevice #2
+  Subdevice #3: subdevice #3
+  Subdevice #4: subdevice #4
+  Subdevice #5: subdevice #5
+  Subdevice #6: subdevice #6
+  Subdevice #7: subdevice #7
+card 1: DAC [USB Audio DAC], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+```
+
+In the above example my USB DAC is card 1. So to make ALSA/Dmix use the USB DAC as the default output device edit ```/usr/share/alsa/alsa.conf```:
+
+```sudo nano /usr/share/alsa/alsa.conf```
+
+Change:
+
+```defaults.ctl.card 0```
+
+```defaults.pcm.card 0```
+
+To:
+
+```defaults.ctl.card 0```
+
+```defaults.pcm.card 0```
+
+
+And While you're at it if your card support 44.1 khz:
+
+Change:
+
+```defaults.pcm.dmix.rate 48000```
+
+To:
+
+```defaults.pcm.dmix.rate 44100```
+
+To prevent unnecessary upsampling.
+
+Reboot and enjoy!!!:
+
+```sudo reboot```
