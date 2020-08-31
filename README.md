@@ -400,3 +400,13 @@ sdram_over_voltage=8
 core_freq=500
 sdram_freq=500
 ```
+
+### Credits
+
+By:
+
+[JasonLG1979](https://github.com/JasonLG1979)
+
+Inspired greatly by the [install-bluetooth script](https://github.com/nicokaiser/rpi-audio-receiver/blob/master/install-bluetooth.sh) by [nicokaiser](https://github.com/nicokaiser) and others in the [rpi-audio-receiver](https://github.com/nicokaiser/rpi-audio-receiver) repo.
+
+Bluealsa systemd integration adapted from the [Arkq/bluez-alsa wiki](https://github.com/Arkq/bluez-alsa/wiki/Systemd-integration)
