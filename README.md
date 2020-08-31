@@ -31,11 +31,11 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 <b>Copy the sounds to our new folder:</b>
 
-```sudo cp files/device-added.wav /usr/local/share/sounds/__custom/```
+```sudo cp device-added.wav /usr/local/share/sounds/__custom/```
 
-```sudo cp files/device-removed.wav /usr/local/share/sounds/__custom/```
+```sudo cp device-removed.wav /usr/local/share/sounds/__custom/```
 
-```sudo cp files/discoverable.wav.wav /usr/local/share/sounds/__custom/```
+```sudo cp discoverable.wav.wav /usr/local/share/sounds/__custom/```
 
 
 <b>cd back out of the folder and delete it (if you don't plan on contributing to the repo):</b>
