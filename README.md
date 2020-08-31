@@ -13,22 +13,22 @@ The Raspberry Pi Zero is not a very powerful device and the onboard bluetooth mo
 
 ### On with it then...
 
-Install the packages needed:
+<b>Install the packages needed:</b>
 
  ```sudo apt install -y --no-install-recommends git alsa-base alsa-utils bluealsa bluez-tools```
 
 
-Clone the repo and cd into the repo's folder:
+<b>Clone the repo and cd into the repo's folder:</b>
 
 ```https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git & cd PiZero-Bluetooth-Audio-Receiver```
 
 
-Create the folder that will contain our sounds:
+<b>Create the folder that will contain our sounds:</b>
 
 ```sudo mkdir -p /usr/local/share/sounds/__custom```
 
 
-Copy the sounds to our new folder:
+<b>Copy the sounds to our new folder:</b>
 
 ```sudo cp files/device-added.wav /usr/local/share/sounds/__custom/```
 
@@ -37,45 +37,45 @@ Copy the sounds to our new folder:
 ```sudo cp files/discoverable.wav.wav /usr/local/share/sounds/__custom/```
 
 
-cd back out of the folder and delete it (if you don't plan on contributing to the repo):
+<b>cd back out of the folder and delete it (if you don't plan on contributing to the repo):</b>
 
 ```cd & rm -rf PiZero-Bluetooth-Audio-Receiver```
 
 
-Create a bluealsa group:
+<b>Create a bluealsa group:</b>
 
 ```sudo addgroup --system bluealsa```
 
 
-Create an unprivileged bluealsa system user in the bluealsa group:
+<b>Create an unprivileged bluealsa system user in the bluealsa group:</b>
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluealsa bluealsa```
 
 
-Add the bluealsa user to the bluetooth group:
+<b>Add the bluealsa user to the bluetooth group:</b>
 
 ```sudo adduser bluealsa bluetooth```
 
 
-Add the bluealsa user to the audio group:
+<b>Add the bluealsa user to the audio group:</b>
 
 ```sudo adduser bluealsa audio```
 
-Create a bt-agent group:
+<b>Create a bt-agent group:</b>
 
 ```sudo addgroup --system bt-agent```
 
 
-Create an unprivileged bt-agent system user in the bt-agent group:
+<b>Create an unprivileged bt-agent system user in the bt-agent group:</b>
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bt-agent bt-agent```
 
-Add the bt-agent user to the bluetooth group:
+<b>Add the bt-agent user to the bluetooth group:</b>
 
 ```sudo adduser bt-agent bluetooth```
 
 
-Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":
+<b>Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":</b>
 
 ```sudo nano /etc/bluetooth/main.conf```
  
@@ -85,7 +85,7 @@ Change ```#Class = 0x000100``` to ```Class = 0x200428``` and ```#DiscoverableTim
 Save and exit nano (ctrl+x, y, enter)
 
 
-Create an override for the bluetooth.service that disables unneeded plugins:
+<b>Create an override for the bluetooth.service that disables unneeded plugins:</b>
 
 ```sudo systemctl edit bluetooth.service```
 
@@ -98,7 +98,7 @@ ExecStart=/usr/lib/bluetooth/bluetoothd  --noplugin=sap,network,hog,health,midi
 Save and exit nano (ctrl+x, y, enter)
 
 
-Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon.
+<b>Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon:</b>
 
 ```sudo nano /etc/dbus-1/system.d/bluealsa.conf```
 
@@ -107,7 +107,8 @@ Change ```<policy user="root">``` to ```<policy user="bluealsa">```
 Save and exit nano (ctrl+x, y, enter)
 
 
-Override the bluealsa.service file:
+<b>Override the bluealsa.service file:</b>
+
 ```sudo systemctl edit --full bluealsa.service```
 
 Delete everything and paste this into it:
@@ -139,16 +140,16 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-Reload the systemd daemon:
+<b>Reload the systemd daemon:</b>
 
 ```sudo systemctl daemon-reload```
 
-Enable the bluealsa.service:
+<b>Enable the bluealsa.service:</b>
 
 ```sudo systemctl enable bluealsa.service```
 
 
-Create the ```bluealsa-aplay.service``` unit file:
+<b>Create the ```bluealsa-aplay.service```:</b>
 
 ```sudo nano /etc/systemd/system/bluealsa-aplay.service```
 
@@ -178,12 +179,12 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-Enable the bluealsa-aplay.service:
+<b>Enable the bluealsa-aplay.service:</b>
 
 ```sudo systemctl enable bluealsa-aplay.service```
 
 
-Create the bt-agent service to enable "Just Works" bluetooth pairing:
+<b>Create the bt-agent service to enable "Just Works" bluetooth pairing:</b>
 
 ```sudo nano /etc/systemd/system/bt-agent.service```
 
@@ -217,12 +218,12 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-Enable the bt-agent.service:
+<b>Enable the bt-agent.service:</b>
 
 ```sudo systemctl enable bt-agent.service```
 
 
-Create the bt-discovery service to enabe discoverability at startup and be able to toggle it on and off with systemd:
+<b>Create the bt-discovery service to enabe discoverability at startup and be able to toggle it on and off with systemd:</b>
 
 ```sudo nano /etc/systemd/system/bt-discovery.service```
 
@@ -244,12 +245,12 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-Enable the bt-discovery.service:
+<b>Enable the bt-discovery.service:</b>
 
 ```sudo systemctl enable bt-discovery.service```
 
 
-Nuke the useless ```bthelper@.service```:
+<b>Nuke the useless ```bthelper@.service```:</b>
 
 ```sudo systemctl disable bthelper@.service```
 
@@ -261,7 +262,7 @@ Nuke the useless ```bthelper@.service```:
 
 ```sudo systemctl reset-failed```
 
-Create a udev script so our Pi Zero is only discoverable if no devices are connected:
+<b>Create a udev script so our Pi Zero is only discoverable if no devices are connected:</b>
 
 ```sudo nano /usr/local/bin/bluetooth-udev```
 
@@ -285,12 +286,12 @@ fi
 Save and exit nano (ctrl+x, y, enter)
 
 
-Set the proper permissions for the script:
+<b>Set the proper permissions for the script:</b>
 
 ```sudo chmod 755 /usr/local/bin/bluetooth-udev```
 
 
-Create a udev rule to call the scrpit:
+<b>Create a udev rule to call the scrpit:</b>
 
 ```sudo nano /etc/udev/rules.d/99-bluetooth-udev.rules```
 
@@ -302,7 +303,7 @@ KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 ```
 Save and exit nano (ctrl+x, y, enter)
 
-Reboot:
+<b>Reboot:</b>
 
 ```sudo reboot```
 
