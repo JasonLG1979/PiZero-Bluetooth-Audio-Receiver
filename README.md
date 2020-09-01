@@ -389,6 +389,58 @@ Reboot and enjoy!!!:
 
 ```sudo reboot```
 
+
+### Audio Troubleshooting
+
+<i>I've got everything working but the audio sounds compressed and/or distorted.</i>
+
+Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample clipping](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion. No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent som of the intersample clipping and see if that helps.
+
+To do this we'll use the softvol ALSA plugin.
+
+<b>Edit ```/etc/asound.conf```.
+
+```sudo nano /etc/asound.conf```
+
+Paste this into the file:
+
+```
+pcm.!default {
+    type softvol
+    slave.pcm "hw:<card #>,0"
+    control {
+        name "Softvol"
+        card <card #>
+    }
+    min_dB -58.0
+    max_dB -3.0
+}
+```
+
+Replace both instances of:
+
+```<card #>```
+
+
+With whatever card you want to use from the output of ```aplay -l```.
+
+
+So in the above example using a USB DAC and the USB DAC being card 1 it would look like this:
+
+```
+pcm.!default {
+    type softvol
+    slave.pcm "hw:1,0"
+    control {
+        name "Softvol"
+        card 1
+    }
+    min_dB -58.0
+    max_dB -3.0
+}
+```
+
+
 ### Bonus Points!!!
 
 <b>!!!WARNING!!!</b>
