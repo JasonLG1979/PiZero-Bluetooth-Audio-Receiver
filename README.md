@@ -440,6 +440,16 @@ pcm.!default {
 }
 ```
 
+Save and exit nano (ctrl+x, y, enter)
+
+
+<b>Restart the bluealsa-aplay service.</b>
+
+```sudo systemctl restart bluealsa-aplay.service```
+
+
+<b>Stream some audio to your Pi Zero and see if that helped at all</b>
+
 
 ### Bonus Points!!!
 
