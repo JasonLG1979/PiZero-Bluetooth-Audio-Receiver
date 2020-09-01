@@ -394,7 +394,7 @@ Reboot and enjoy!!!:
 
 <i>I've got everything working but the audio sounds compressed and/or distorted.</i>
 
-Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample clipping](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion. No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
+Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample peaks](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion (most consumer grade DACs have zero volume headroom, so at full digital volume any intersample peaks above 0.0dB will clip and distort) No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
 
 To do this we'll use the softvol ALSA plugin.
 
