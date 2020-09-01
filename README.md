@@ -398,7 +398,7 @@ Not all DACs are created equal. Up to the point of diminishing returns (maybe $1
 
 To do this we'll use the softvol ALSA plugin.
 
-<b>Edit ```/etc/asound.conf```.
+<b>Edit ```/etc/asound.conf```</b>.
 
 ```sudo nano /etc/asound.conf```
 
