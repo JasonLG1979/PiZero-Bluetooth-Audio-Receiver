@@ -456,13 +456,15 @@ Reboot and enjoy!!!:
 
 ### Audio Troubleshooting
 
-<i>I've got everything working but the audio sounds compressed and/or distorted.</i>
+<i><b>I've got everything working but the audio sounds compressed and/or distorted.</b></i>
+
 
 Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample peaks](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion (most consumer grade DACs have zero volume headroom, so at full digital volume any intersample peaks above 0.0dB will clip and distort) No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
 
+
 To do this we'll use the softvol ALSA plugin.
 
-<b>Edit ```/etc/asound.conf```</b>.
+Edit ```/etc/asound.conf```.
 
 ```sudo nano /etc/asound.conf```
 
@@ -536,20 +538,22 @@ With whatever card you want to use from the output of ```aplay -l```.
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Reboot</b>
+Reboot
 
 ```sudo reboot```
 
 
-<b>Stream some audio to your Pi Zero and see if that helped at all</b>
+Stream some audio to your Pi Zero and see if that helped at all.
 
 
-<i>I'm trying to change the volume directly on the Pi Zero and nothing happens.</i>
+<i><b>I'm trying to change the volume directly on the Pi Zero and nothing happens.</b></i>
+
 
 Your DAC doesn't have hardware volume control, or at least it doesn't work. Follow the above section and enable software volume control, remove the ```max_dB -3.0``` line if you don't need additional volume headroom.
 
 
-<i>I can hear stuff but the volume is really low.</i>
+<i><b>I can hear stuff but the volume is really low.</b></i>
+
 
 Turn the volume up on the Pi Zero with ```alsamixer```.
 
