@@ -407,12 +407,11 @@ Paste this into the file:
 ```
 pcm.!default {
     type softvol
-    slave.pcm "hw:<card #>,0"
+    slave.pcm "hw:<card #>"
     control {
         name "Softvol"
         card <card #>
     }
-    min_dB -58.0
     max_dB -3.0
 }
 ```
@@ -430,12 +429,11 @@ So in the above example using a USB DAC and the USB DAC being card 1 it would lo
 ```
 pcm.!default {
     type softvol
-    slave.pcm "hw:1,0"
+    slave.pcm "hw:1"
     control {
         name "Softvol"
         card 1
     }
-    min_dB -58.0
     max_dB -3.0
 }
 ```
