@@ -360,7 +360,7 @@ card 1: DAC [USB Audio DAC], device 0: USB Audio [USB Audio]
   Subdevice #0: subdevice #0
 ```
 
-In the above example my USB DAC is card 1. So to make ALSA/Dmix use the USB DAC as the default output device edit ```/usr/share/alsa/alsa.conf```:
+Edit ```/usr/share/alsa/alsa.conf```:
 
 ```sudo nano /usr/share/alsa/alsa.conf```
 
@@ -372,9 +372,16 @@ Change:
 
 To:
 
-```defaults.ctl.card 1```
+```defaults.ctl.card <card #>```
 
-```defaults.pcm.card 1```
+```defaults.pcm.card <card #>```
+
+Replace all instances of:
+
+```<card #>```
+
+
+With whatever card you want to use from the output of ```aplay -l```.
 
 
 While you're at it if your card support 44.1 khz:
@@ -388,6 +395,59 @@ To:
 ```defaults.pcm.dmix.rate 44100```
 
 To prevent unnecessary upsampling.
+
+
+If you're an audio purist, your DAC supports 16bit 44.1 khz, doesn't sound like butt at 0dB, and you only plan on using your Pi Zero as a Bluetooth audio receiver with no other audio programs you can skip all software mixing, resampling and volume control and expose the raw audio device. (this is my preferred configuration)
+
+
+Edit ```/etc/asound.conf```:
+
+```sudo nano  /etc/asound.conf```
+
+
+```
+defaults.pcm.card <card #>
+defaults.ctl.card <card #>
+
+pcm.!default {
+    type hw
+    card <card #>
+}
+
+ctl.!default {
+    type hw
+    card <card #>
+}
+
+```
+
+Replace all instances of:
+
+```<card #>```
+
+
+With whatever card you want to use from the output of ```aplay -l```.
+
+
+So in the above example using a USB DAC and the USB DAC being card 1 it would look like this:
+
+```
+defaults.pcm.card 1
+defaults.ctl.card 1
+
+pcm.!default {
+    type hw
+    card 1
+}
+
+ctl.!default {
+    type hw
+    card 1
+}
+```
+
+Save and exit nano (ctrl+x, y, enter)
+
 
 Reboot and enjoy!!!:
 
@@ -406,9 +466,12 @@ To do this we'll use the softvol ALSA plugin.
 
 ```sudo nano /etc/asound.conf```
 
-Paste this into the file:
+If you don't care about software mixing and just want a little headroom paste this into the file:
 
 ```
+defaults.pcm.card <card #>
+defaults.ctl.card <card #>
+
 pcm.!default {
     type softvol
     slave.pcm "hw:<card #>"
@@ -420,7 +483,49 @@ pcm.!default {
 }
 ```
 
-Replace both instances of:
+Or if you do want software mixing paste this into the file:
+
+```
+defaults.pcm.card <card #>
+defaults.ctl.card <card #>
+
+pcm.dmixer {
+    type dmix
+    ipc_key 1024
+    ipc_perm 0666
+    slave.pcm "hw:<card #>"
+    slave {
+        rate 44100
+        format S16_LE
+    }
+    bindings {
+        0 0
+        1 1
+    }
+}
+
+ctl.dmixer {
+    type hw
+    card <card #>
+}
+
+pcm.softvol {
+    type softvol
+    slave.pcm "dmixer"
+    control {
+      name "Softvol"
+      card <card #>
+    }
+    max_dB -3.0
+}
+
+pcm.!default {
+    type plug
+    slave.pcm "softvol"
+}
+
+```
+Replace all instances of:
 
 ```<card #>```
 
@@ -428,29 +533,36 @@ Replace both instances of:
 With whatever card you want to use from the output of ```aplay -l```.
 
 
-So in the above example using a USB DAC and the USB DAC being card 1 it would look like this:
-
-```
-pcm.!default {
-    type softvol
-    slave.pcm "hw:1"
-    control {
-        name "Softvol"
-        card 1
-    }
-    max_dB -3.0
-}
-```
-
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Restart the bluealsa-aplay service.</b>
+<b>Reboot</b>
 
-```sudo systemctl restart bluealsa-aplay.service```
+```sudo reboot```
 
 
 <b>Stream some audio to your Pi Zero and see if that helped at all</b>
+
+
+<i>I'm trying to change the volume directly on the Pi Zero and nothing happens.</i>
+
+Your DAC doesn't have hardware volume control, or at least it doesn't work. Follow the above section and enable software volume control, remove the ```max_dB -3.0``` line if you don't need additional volume headroom.
+
+
+<i>I can hear stuff but the volume is really low.</i>
+
+Turn the volume up on the Pi Zero with ```alsamixer```.
+
+```alsamixer -c<card #>```
+
+Replace:
+
+```<card #>```
+
+
+With whatever card you want to control from the output of ```aplay -l```.
+
+alsamixer is pretty self explanatory...
 
 
 ### Bonus Points!!!
