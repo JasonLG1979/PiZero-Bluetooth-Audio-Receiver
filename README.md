@@ -88,11 +88,15 @@ Change:
 
 ```#DiscoverableTimeout = 0```
 
+```#FastConnectable = false``` 
+
 To:
 
 ```Class = 0x200428```
 
 ```DiscoverableTimeout = 0```
+
+```FastConnectable = true``` 
 
 
 Save and exit nano (ctrl+x, y, enter)
