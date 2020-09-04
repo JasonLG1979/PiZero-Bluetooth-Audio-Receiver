@@ -459,7 +459,7 @@ Reboot and enjoy!!!:
 <i><b>I've got everything working but the audio sounds compressed and/or distorted.</b></i>
 
 
-Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample peaks](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion (most consumer grade DACs have zero volume headroom, so at full digital volume any intersample peaks above 0.0dB will clip and distort) No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
+Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample peaks](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion (most consumer grade DACs have zero volume headroom, so at full digital volume any intersample peaks above 0.0dB will clip and distort) No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC or upsample to 48 Khz, see below) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
 
 
 To do this we'll use the softvol ALSA plugin.
@@ -567,6 +567,124 @@ Replace:
 With whatever card you want to control from the output of ```aplay -l```.
 
 alsamixer is pretty self explanatory...
+
+
+<i><b>I've done everything above and it still sounds like butt.</b></i>
+
+Cheap I2s DAC HATS operate in "Slave" mode, meaning they get their clock from the Pi Zero. The Pi Zero (or any other version) is not capable of producing a clean 44.1 khz clock. This results in a lot of jitter and distortion when playing 44.1 khz audio.
+
+
+You have 2 options:
+
+1. Buy a better DAC, one that operates in "Master" mode and provides it's own clock for 44.1 khz audio.
+
+2. Upsample to 48 khz.
+
+Option 1 is always going to be your best bet. Objectively, better DAC = better sound. As stated above no amount of tweaking is going to make a bad sounding DAC sound great. Upsampling is not a magic bullet. It's a trade-off. Upsampling in and of itself NEVER improves sound quality. Upsampling to non-integer values of the source signal will ALWAYS intoduce at least a small amount of distortion. Our hope here is that the upsampling distortion is less (or at least less objectionable) than the distortion created by jitter.
+
+High quality software upsampling is computationally expensive. You will have to overclock your Pi Zero and force turbo mode otherwise you will experience audio drop outs. Even on an overclocked Pi Zero expect an additional 20% or more CPU useage and the occasional audio drop out.
+
+To upsample to 48 khz:
+
+Install ```libasound2-plugins```.
+
+```sudo apt install -y --no-install-recommends libasound2-plugins```
+
+
+Edit ```/etc/asound.conf```.
+
+```sudo nano /etc/asound.conf```
+
+Paste this into the file:
+
+```
+defaults.pcm.rate_converter "speexrate_medium"
+defaults.pcm.card <card #>
+defaults.ctl.card <card #>
+
+pcm.dmixer {
+    type dmix
+    ipc_key 1024
+    ipc_perm 0666
+    slave.pcm "hw:<card #>"
+    slave {
+        rate 48000
+        format S16_LE
+    }
+    bindings {
+        0 0
+        1 1
+    }
+}
+
+ctl.dmixer {
+    type hw
+    card <card #>
+}
+
+pcm.softvol {
+    type softvol
+    slave.pcm "dmixer"
+    control {
+      name "Softvol"
+      card <card #>
+    }
+}
+
+pcm.!default {
+    type plug
+    slave.pcm "softvol"
+}
+
+```
+
+Replace all instances of:
+
+```<card #>```
+
+
+With whatever card you want to use from the output of ```aplay -l```.
+
+
+Save and exit nano (ctrl+x, y, enter)
+
+
+Edit the  bluealsa service file and remove ```--a2dp-force-audio-cd``` to tell devices we will except 48 khz audio also:
+ 
+```sudo systemctl edit --full bluealsa.service```
+
+
+The ```ExecStart``` line should look like this:
+
+```ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink```
+
+
+Save and exit nano (ctrl+x, y, enter)
+
+
+Reload the systemd daemon:
+
+```sudo systemctl daemon-reload```
+
+
+Reboot:
+
+```sudo reboot```
+
+
+If you experience a lot of audio dropouts you can use a lower quality resampling method:
+
+
+Change:
+
+```defaults.pcm.rate_converter "speexrate_medium"```
+
+To:
+
+```defaults.pcm.rate_converter "speexrate"```
+
+
+If upsampling and/or giving your DAC a little bit of digital headroom does not improve the overall sound quality, get a beter DAC.
 
 
 ### Bonus Points!!!
