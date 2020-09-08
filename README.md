@@ -17,7 +17,7 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 
 <b>Install the packages needed:</b>
 
- ```sudo apt install -y --no-install-recommends git alsa-base alsa-utils bluealsa bluez-tools```
+ ```sudo apt install -y --no-install-recommends git bluealsa bluez-tools```
 
 
 <b>Clone the repo and cd into the repo's folder:</b>
