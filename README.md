@@ -11,26 +11,26 @@ It is assumed that you have started from a fully updated, unmodified, and fresh 
 ### Limitations
 The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth module is not the greatest, it is known to have Wi-Fi coexistence issues (you may experience audio dropouts with wifi enabled), it is not suitable for low latency aplications and the package used in this how-to (bluealsa) only supports the SBC codec (no AAC, aptX*, or LDAC). If you're looking for an HD audiophile experience, this ain't it.
 
-<i>*The dropout issue can sometimes be mitigated by disabling Wi-Fi and/or forcing turbo mode (the CPU will run full tilt all the time). Forcing turbo will however cause your Pi Zero to use more power and produce more heat. Under normal circumstances though heat is not a concern with a Pi Zero even with force turbo enabled.</i>
+_*The dropout issue can sometimes be mitigated by disabling Wi-Fi and/or forcing turbo mode (the CPU will run full tilt all the time). Forcing turbo will however cause your Pi Zero to use more power and produce more heat. Under normal circumstances though heat is not a concern with a Pi Zero even with force turbo enabled._
 
 ### On with it then...
 
-<b>Install the packages needed:</b>
+**Install the packages needed:**
 
  ```sudo apt install -y --no-install-recommends git bluealsa bluez-tools```
 
 
-<b>Clone the repo and cd into the repo's folder:</b>
+**Clone the repo and cd into the repo's folder:**
 
 ```git clone https://github.com/JasonLG1979/PiZero-Bluetooth-Audio-Receiver.git && cd PiZero-Bluetooth-Audio-Receiver```
 
 
-<b>Create the folder that will contain our sounds:</b>
+**Create the folder that will contain our sounds:**
 
 ```sudo mkdir -p /usr/local/share/sounds/__custom```
 
 
-<b>Copy the sounds to our new folder:</b>
+**Copy the sounds to our new folder:**
 
 ```sudo cp device-added.wav /usr/local/share/sounds/__custom/```
 
@@ -39,45 +39,45 @@ The Raspberry Pi Zero is not a very powerful device and the onboard Bluetooth mo
 ```sudo cp discoverable.wav /usr/local/share/sounds/__custom/```
 
 
-<b>cd back out of the folder and delete it (if you don't plan on contributing to the repo):</b>
+**cd back out of the folder and delete it (if you don't plan on contributing to the repo):**
 
 ```cd && rm -rf PiZero-Bluetooth-Audio-Receiver```
 
 
-<b>Create a bluealsa group:</b>
+**Create a bluealsa group:**
 
 ```sudo addgroup --system bluealsa```
 
 
-<b>Create an unprivileged bluealsa system user in the bluealsa group:</b>
+**Create an unprivileged bluealsa system user in the bluealsa group:**
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bluealsa bluealsa```
 
 
-<b>Add the bluealsa user to the bluetooth group:</b>
+**Add the bluealsa user to the bluetooth group:**
 
 ```sudo adduser bluealsa bluetooth```
 
 
-<b>Add the bluealsa user to the audio group:</b>
+**Add the bluealsa user to the audio group:**
 
 ```sudo adduser bluealsa audio```
 
-<b>Create a bt-agent group:</b>
+**Create a bt-agent group:**
 
 ```sudo addgroup --system bt-agent```
 
 
-<b>Create an unprivileged bt-agent system user in the bt-agent group:</b>
+**Create an unprivileged bt-agent system user in the bt-agent group:**
 
 ```sudo adduser --system --disabled-password --disabled-login --no-create-home --ingroup bt-agent bt-agent```
 
-<b>Add the bt-agent user to the Bluetooth group:</b>
+**Add the bt-agent user to the Bluetooth group:**
 
 ```sudo adduser bt-agent bluetooth```
 
 
-<b>Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":</b>
+**Edit ```/etc/bluetooth/main.conf``` to disable the discoverable timeout and change our device class to "HiFi Audio Device":**
 
 ```sudo nano /etc/bluetooth/main.conf```
  
@@ -102,7 +102,7 @@ To:
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Create an override for the bluetooth.service that disables unneeded plugins:</b>
+**Create an override for the bluetooth.service that disables unneeded plugins:**
 
 ```sudo systemctl edit bluetooth.service```
 
@@ -115,12 +115,12 @@ ExecStart=/usr/lib/bluetooth/bluetoothd  --noplugin=sap,network,hog,health,midi
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Reload the systemd daemon:</b>
+**Reload the systemd daemon:**
 
 ```sudo systemctl daemon-reload```
 
 
-<b>Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon:</b>
+**Edit ```/etc/dbus-1/system.d/bluealsa.conf``` to allow our unprivileged bluealsa system user to run the bluealsa daemon:**
 
 ```sudo nano /etc/dbus-1/system.d/bluealsa.conf```
 
@@ -135,7 +135,7 @@ To:
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Override the bluealsa service:</b>
+**Override the bluealsa service:**
 
 ```sudo systemctl edit --full bluealsa.service```
 
@@ -168,16 +168,16 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Reload the systemd daemon:</b>
+**Reload the systemd daemon:**
 
 ```sudo systemctl daemon-reload```
 
-<b>Enable the bluealsa.service:</b>
+**Enable the bluealsa.service:**
 
 ```sudo systemctl enable bluealsa.service```
 
 
-<b>Create the bluealsa-aplay service:</b>
+**Create the bluealsa-aplay service:**
 
 ```sudo nano /etc/systemd/system/bluealsa-aplay.service```
 
@@ -207,12 +207,12 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Enable the bluealsa-aplay service:</b>
+**Enable the bluealsa-aplay service:**
 
 ```sudo systemctl enable bluealsa-aplay.service```
 
 
-<b>Create the bt-agent service to enable "Just Works" Bluetooth pairing:</b>
+**Create the bt-agent service to enable "Just Works" Bluetooth pairing:**
 
 ```sudo nano /etc/systemd/system/bt-agent.service```
 
@@ -246,12 +246,12 @@ WantedBy=multi-user.target
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Enable the bt-agent service:</b>
+**Enable the bt-agent service:**
 
 ```sudo systemctl enable bt-agent.service```
 
 
-<b>Create the bt-discovery service to enabe discoverability at startup and be able to toggle it on and off with systemd:</b>
+**Create the bt-discovery service to enabe discoverability at startup and be able to toggle it on and off with systemd:**
 
 ```sudo nano /etc/systemd/system/bt-discovery.service```
 
@@ -273,12 +273,12 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-<b>Enable the bt-discovery service:</b>
+**Enable the bt-discovery service:**
 
 ```sudo systemctl enable bt-discovery.service```
 
 
-<b>Nuke the useless bthelper service:</b>
+**Nuke the useless bthelper service:**
 
 ```sudo systemctl disable bthelper@.service```
 
@@ -290,7 +290,7 @@ WantedBy=multi-user.target
 
 ```sudo systemctl reset-failed```
 
-<b>Create a udev script so our Pi Zero is only discoverable if no devices are connected:</b>
+**Create a udev script so our Pi Zero is only discoverable if no devices are connected:**
 
 ```sudo nano /usr/local/bin/bluetooth-udev```
 
@@ -314,12 +314,12 @@ fi
 Save and exit nano (ctrl+x, y, enter)
 
 
-<b>Set the proper permissions for the script:</b>
+**Set the proper permissions for the script:**
 
 ```sudo chmod 755 /usr/local/bin/bluetooth-udev```
 
 
-<b>Create a udev rule to call the scrpit:</b>
+**Create a udev rule to call the scrpit:**
 
 ```sudo nano /etc/udev/rules.d/99-bluetooth-udev.rules```
 
@@ -331,7 +331,7 @@ KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 ```
 Save and exit nano (ctrl+x, y, enter)
 
-<b>Reboot:</b>
+**Reboot:**
 
 ```sudo reboot```
 
@@ -609,7 +609,6 @@ ctl.!default {
     }
 }
 ```
-
 
 ### Credits
 
