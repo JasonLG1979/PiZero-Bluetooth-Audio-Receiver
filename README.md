@@ -153,7 +153,7 @@ BusName=org.bluealsa
 User=bluealsa
 Group=bluealsa
 NoNewPrivileges=true
-ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink --a2dp-force-audio-cd
+ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
 Restart=on-failure
 ProtectSystem=strict
 ProtectHome=true
@@ -190,7 +190,7 @@ After=bluealsa.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/bluealsa-aplay --profile-a2dp --single-audio --pcm-buffer-time=1000000 00:00:00:00:00:00
+ExecStart=/usr/bin/bluealsa-aplay --profile-a2dp --single-audio 00:00:00:00:00:00
 Restart=on-failure
 ProtectSystem=strict
 ProtectHome=true
@@ -340,371 +340,276 @@ Your Pi Zero should be discoverable and show up to other devices as a Bluetooth 
 
 ### Audio Setup
 
-Audio will play out the default output device. It will be 16 bit 44.1 khz. Upsampling it to a value that is not a multiple of 44.1 khz will degrade the sound quality and cost you valuable CPU cycles up to the point of causing audio dropouts. If you are using a DAC hat follow the manufacturer's documentation to setup your DAC hat as the default output device. If you are using a USB DAC you can use ```aplay -l``` to find your card.
+**Find your card**
 
-An example output of ```aplay -l``` is here:
+   `aplay -l`
+
+Should output something like this:
 ```
 **** List of PLAYBACK Hardware Devices ****
-card 0: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
-  Subdevices: 8/8
-  Subdevice #0: subdevice #0
-  Subdevice #1: subdevice #1
-  Subdevice #2: subdevice #2
-  Subdevice #3: subdevice #3
-  Subdevice #4: subdevice #4
-  Subdevice #5: subdevice #5
-  Subdevice #6: subdevice #6
-  Subdevice #7: subdevice #7
-card 1: DAC [USB Audio DAC], device 0: USB Audio [USB Audio]
-  Subdevices: 1/1
+card 0: sndrpihifiberry [snd_rpi_hifiberry_dac], device 0: HifiBerry DAC HiFi pcm5102a-hifi-0 [HifiBerry DAC HiFi pcm5102a-hifi-0]
+  Subdevices: 0/1
   Subdevice #0: subdevice #0
 ```
 
-Edit ```/usr/share/alsa/alsa.conf```:
+**Find your card's supported format(s) and sampling rate(s)**
 
-```sudo nano /usr/share/alsa/alsa.conf```
+While no other audio is being played:
+```
+aplay -Dhw:<card #>,<device #> --dump-hw-params /usr/share/sounds/alsa/Front_Right.wav
+```
+For example:
+```
+aplay -Dhw:0,0 --dump-hw-params /usr/share/sounds/alsa/Front_Right.wav
+```
+The output should look something like this if the card and device combination is correct:
+```
+ACCESS:  MMAP_INTERLEAVED RW_INTERLEAVED
+FORMAT:  S16_LE S24_LE S32_LE
+SUBFORMAT:  STD
+SAMPLE_BITS: [16 32]
+FRAME_BITS: [32 64]
+CHANNELS: 2
+RATE: [8000 192000]
+...
+```
+The above card supports formats S16_LE, S24_LE, and S32_LE, at up to a sampling rate of 192000.
 
-Change:
+**Check to see if your sound card has hardware volume controls**
+```
+amixer -c<card #> scontrols
+```
+For example:
+```
+amixer -c0 scontrols
+```
+The output should look something like this if your card has hardware volume control:
+```
+Simple mixer control 'PCM',0
+...
+```
+**So by now we should know the card # the device # the supported formats, sample rates and if the card has hardware volume control.**
 
-```defaults.ctl.card 0```
+Now let's do a quick test to see if we're right.
 
-```defaults.pcm.card 0```
+_This will be loud so take your headphones off and/or turn down whatever you Pi is connected to!!!_
 
-To:
+While no other audio is being played:
 
-```defaults.ctl.card <card #>```
+_*speaker-test does not support S24_LE for some reason?_
+```
+speaker-test -l1 -c2 -Dhw:<card #>,<device #> -r<samplerate> -F<format>
+```
+So for example if we wanted to make sure the card used in the above examples supported CD quality audio:
+```
+speaker-test -l1 -c2 -Dhw:0,0 -r44100 -FS16_LE
+```
 
-```defaults.pcm.card <card #>```
+If you don't get any errors and you hear white noise you're all set.
 
-Replace all instances of:
-
-```<card #>```
-
-
-With whatever card you want to use from the output of ```aplay -l```.
-
-
-While you're at it if your card support 44.1 khz:
-
-Change:
-
-```defaults.pcm.dmix.rate 48000```
-
-To:
-
-```defaults.pcm.dmix.rate 44100```
-
-To prevent unnecessary upsampling.
-
-
-If you're an audio purist, your DAC supports 16bit 44.1 khz, doesn't sound like butt at 0dB, and you only plan on using your Pi Zero as a Bluetooth audio receiver with no other audio programs you can skip all software mixing, resampling and volume control and expose the raw audio device. (this is my preferred configuration)
-
-
-Edit ```/etc/asound.conf```:
-
-```sudo nano  /etc/asound.conf```
-
+You can use all of your new found information to configure a functional `default` output with the help of the below `asound.conf` by changing:
 
 ```
-defaults.pcm.card <card #>
-defaults.ctl.card <card #>
+defaults.ctl.card
+defaults.pcm.card
+defaults.pcm.device
+```
+`slave.pcm`
+
+in 
+
+`pcm.!default`
+
+And optionally installing higher quality sample rate converters and uncommenting `defaults.pcm.rate_converter`.
+
+Edit to your needs and copy and paste to `/etc/asound.conf` (the file does not exist by default).  
+
+```
+  # /etc/asound.conf
+
+###############################################################################
+
+pcm.hqstereo20 {
+    @args [
+        SAMPLE_RATE FORMAT BUFFER_PERIODS
+        BUFFER_PERIOD_TIME VOL_MIN_DB
+        VOL_MAX_DB VOL_RESOLUTION VOL_NAME
+    ]
+    # Sampling rate in Hz:
+    # 44100, 48000, 88200, 96000...
+    # Defaults to 44.1 kHz (CD Quality).
+    @args.SAMPLE_RATE {
+        type integer
+        default 44100
+    }
+    # Format:
+    # S16_LE, S24_LE, S24_3LE, S32_LE...
+    # Defaults to S16_LE (CD Quality).
+    @args.FORMAT {
+        type string
+        default S16_LE
+    }
+    # Periods per buffer.
+    @args.BUFFER_PERIODS {
+        type integer
+        default 4
+    }
+    # Period size in time.
+    # Defaults to 125ms (0.125 sec).
+    # BUFFER_PERIODS * BUFFER_PERIOD_TIME = buffer time/size
+    @args.BUFFER_PERIOD_TIME {
+        type integer
+        default 125000
+    }
+    # Minimal dB value of the software volume control.
+    @args.VOL_MIN_DB {
+        type real
+        default -51.0
+    }
+    # Maximal dB value of the software volume control.
+    @args.VOL_MAX_DB {
+        type real
+        default 0.0
+    }
+    # How many steps between min and max volume.
+    @args.VOL_RESOLUTION {
+        type integer
+        default 256
+    }
+    # The name of the software volume control.
+    # If your card does not have hardware volume control
+    # naming it PCM will cause most apps that use alsa volume
+    # to use the software volume control.
+    @args.VOL_NAME {
+        type string
+        default Softvol
+    }
+    type softvol
+    min_dB $VOL_MIN_DB
+    max_dB $VOL_MAX_DB
+    resolution $VOL_RESOLUTION
+    control {
+        name $VOL_NAME
+        card {
+            @func refer
+            name defaults.ctl.card
+        }
+    }
+    slave.pcm {
+        type plug
+        slave.pcm {
+            type dmix
+            ipc_key {
+                @func refer
+                name defaults.pcm.ipc_key
+            }
+            ipc_gid {
+                @func refer
+                name defaults.pcm.ipc_gid
+            }
+            ipc_perm {
+                @func refer
+                name defaults.pcm.ipc_perm
+            }
+            slowptr 1
+            hw_ptr_alignment roundup
+            slave {
+                pcm {
+                    type hw
+                    nonblock {
+                        @func refer
+                        name defaults.pcm.nonblock
+                    }
+                    card {
+                        @func refer
+                        name defaults.pcm.card
+                    }
+                    device {
+                        @func refer
+                        name defaults.pcm.device
+                    }
+                    subdevice {
+                        @func refer
+                        name defaults.pcm.subdevice
+                    }
+                }
+                channels 2
+                period_size 0
+                buffer_size 0
+                buffer_time 0
+                period_time $BUFFER_PERIOD_TIME
+                periods $BUFFER_PERIODS
+                rate $SAMPLE_RATE
+                format $FORMAT
+            }
+            bindings {
+                0 0
+                1 1
+            }
+        }
+    }
+}
+
+###############################################################################
+
+# Change to the card number that you want to be the default control card.
+# Default: 0
+defaults.ctl.card 0
+
+# Change to the card number that you want to be the default playback card.
+# It should usually be the same as defaults.ctl.card.
+# Default: 0
+defaults.pcm.card 0
+
+# Change to the device number that you want to be the default device on the default card.
+# 0 or 1 is usually the correct device number.
+# Default: 0
+defaults.pcm.device 0
+
+# Change to the subdevice number that you want to be the default subdevice on the default device.
+# Should rarely need to be changed.
+# Default: -1
+defaults.pcm.subdevice -1
+
+# To install high quality samplerate converters on Debian based systems:
+# sudo apt install -y --no-install-recommends libasound2-plugins 
+
+# To list available rate_converter's:
+# echo "$(ls /usr/lib/*/alsa-lib | grep "libasound_module_rate_")" | sed -e "s/^libasound_module_rate_//" -e "s/.so$//"
+
+# Uncomment and replace speexrate_medium with the rate_converter of your choice.
+# defaults.pcm.rate_converter speexrate_medium
 
 pcm.!default {
-    type hw
-    card <card #>
+    type empty
+    # Optional args:
+    # SAMPLE_RATE: default: 44100 
+    # FORMAT: default: S16_LE
+    # BUFFER_PERIODS: default: 4
+    # BUFFER_PERIOD_TIME: default: 125000
+    # VOL_MIN_DB: default: -51.0
+    # VOL_MAX_DB: default: 0.0
+    # VOL_RESOLUTION: default: 256
+    # VOL_NAME: default: Softvol
+
+    # Example:
+    # hifiberry dac+ zero on a pi zero.
+    # slave.pcm "hqstereo20:FORMAT=S32_LE,BUFFER_PERIOD_TIME=250000,VOL_MIN_DB=-48.0"
+
+    slave.pcm "hqstereo20"
 }
+
+###############################################################################
 
 ctl.!default {
     type hw
-    card <card #>
-}
-
-```
-
-Replace all instances of:
-
-```<card #>```
-
-
-With whatever card you want to use from the output of ```aplay -l```.
-
-
-So in the above example using a USB DAC and the USB DAC being card 1 it would look like this:
-
-```
-defaults.pcm.card 1
-defaults.ctl.card 1
-
-pcm.!default {
-    type hw
-    card 1
-}
-
-ctl.!default {
-    type hw
-    card 1
-}
-```
-
-Save and exit nano (ctrl+x, y, enter)
-
-
-Reboot and enjoy!!!:
-
-```sudo reboot```
-
-
-### Audio Troubleshooting
-
-<i><b>I've got everything working but the audio sounds compressed and/or distorted.</b></i>
-
-
-Not all DACs are created equal. Up to the point of diminishing returns (maybe $100?) you get pretty much what you pay for. Welcome to the worlds of [jitter](https://en.wikipedia.org/wiki/Jitter) and [intersample peaks](https://www.productionmusiclive.com/blogs/news/mastering-tip-what-are-inter-sample-peaks-why-they-matter) both of which cause distortion (most consumer grade DACs have zero volume headroom, so at full digital volume any intersample peaks above 0.0dB will clip and distort) No amount of tweaking is going to make a $5 USB DAC or $15 DAC HAT sound great, and there's really not anything that can be done about jitter (except buy a better DAC or upsample to 48 Khz, see below) but we can maybe make the DAC tolerable by giving it a little bit of digital headroom to help prevent some of the intersample clipping and see if that helps.
-
-
-To do this we'll use the softvol ALSA plugin.
-
-Edit ```/etc/asound.conf```.
-
-```sudo nano /etc/asound.conf```
-
-If you don't care about software mixing and just want a little headroom paste this into the file:
-
-```
-defaults.pcm.card <card #>
-defaults.ctl.card <card #>
-
-pcm.!default {
-    type softvol
-    slave.pcm "hw:<card #>"
-    control {
-        name "Softvol"
-        card <card #>
-    }
-    max_dB -3.0
-}
-```
-
-Or if you do want software mixing paste this into the file:
-
-```
-defaults.pcm.card <card #>
-defaults.ctl.card <card #>
-
-pcm.dmixer {
-    type dmix
-    ipc_key 1024
-    ipc_perm 0666
-    slave.pcm "hw:<card #>"
-    slave {
-        rate 44100
-        format S16_LE
-    }
-    bindings {
-        0 0
-        1 1
+    card {
+        @func refer
+        name defaults.ctl.card
     }
 }
-
-ctl.dmixer {
-    type hw
-    card <card #>
-}
-
-pcm.softvol {
-    type softvol
-    slave.pcm "dmixer"
-    control {
-      name "Softvol"
-      card <card #>
-    }
-    max_dB -3.0
-}
-
-pcm.!default {
-    type plug
-    slave.pcm "softvol"
-}
-
-```
-Replace all instances of:
-
-```<card #>```
-
-
-With whatever card you want to use from the output of ```aplay -l```.
-
-
-Save and exit nano (ctrl+x, y, enter)
-
-
-Reboot
-
-```sudo reboot```
-
-
-Stream some audio to your Pi Zero and see if that helped at all.
-
-
-<i><b>I'm trying to change the volume directly on the Pi Zero and nothing happens.</b></i>
-
-
-Your DAC doesn't have hardware volume control, or at least it doesn't work. Follow the above section and enable software volume control, remove the ```max_dB -3.0``` line if you don't need additional volume headroom.
-
-
-<i><b>I can hear stuff but the volume is really low.</b></i>
-
-
-Turn the volume up on the Pi Zero with ```alsamixer```.
-
-```alsamixer -c<card #>```
-
-Replace:
-
-```<card #>```
-
-
-With whatever card you want to control from the output of ```aplay -l```.
-
-alsamixer is pretty self explanatory...
-
-
-<i><b>I've done everything above and it still sounds like butt.</b></i>
-
-Cheap I2s DAC HATS operate in "Slave" mode, meaning they get their clock from the Pi Zero. The Pi Zero (or any other version) is not capable of producing a clean 44.1 khz clock. This results in a lot of jitter and distortion when playing 44.1 khz audio.
-
-
-You have 2 options:
-
-1. Buy a better DAC, one that operates in "Master" mode and provides it's own clock for 44.1 khz audio.
-
-2. Upsample to 48 khz.
-
-Option 1 is always going to be your best bet. Objectively, better DAC = better sound. As stated above no amount of tweaking is going to make a bad sounding DAC sound great. Upsampling is not a magic bullet. It's a trade-off. Upsampling in and of itself NEVER improves sound quality. Upsampling to non-integer values of the source signal will ALWAYS intoduce at least a small amount of distortion. Our hope here is that the upsampling distortion is less (or at least less objectionable) than the distortion created by jitter.
-
-High quality software upsampling is computationally expensive. You will have to overclock your Pi Zero and force turbo mode otherwise you will experience audio drop outs. Even on an overclocked Pi Zero expect an additional 20% or more CPU useage and the occasional audio drop out.
-
-To upsample to 48 khz:
-
-Install ```libasound2-plugins```.
-
-```sudo apt install -y --no-install-recommends libasound2-plugins```
-
-
-Edit ```/etc/asound.conf```.
-
-```sudo nano /etc/asound.conf```
-
-Paste this into the file:
-
-```
-defaults.pcm.rate_converter "speexrate_medium"
-defaults.pcm.card <card #>
-defaults.ctl.card <card #>
-
-pcm.dmixer {
-    type dmix
-    ipc_key 1024
-    ipc_perm 0666
-    slave.pcm "hw:<card #>"
-    slave {
-        rate 48000
-        format S16_LE
-    }
-    bindings {
-        0 0
-        1 1
-    }
-}
-
-ctl.dmixer {
-    type hw
-    card <card #>
-}
-
-pcm.softvol {
-    type softvol
-    slave.pcm "dmixer"
-    control {
-      name "Softvol"
-      card <card #>
-    }
-}
-
-pcm.!default {
-    type plug
-    slave.pcm "softvol"
-}
-
 ```
 
-Replace all instances of:
-
-```<card #>```
-
-
-With whatever card you want to use from the output of ```aplay -l```.
-
-
-Save and exit nano (ctrl+x, y, enter)
-
-
-Edit the  bluealsa service file and remove ```--a2dp-force-audio-cd``` to tell devices we will except 48 khz audio also:
- 
-```sudo systemctl edit --full bluealsa.service```
-
-
-The ```ExecStart``` line should look like this:
-
-```ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink```
-
-
-Save and exit nano (ctrl+x, y, enter)
-
-
-Reload the systemd daemon:
-
-```sudo systemctl daemon-reload```
-
-
-Reboot:
-
-```sudo reboot```
-
-
-If you experience a lot of audio dropouts you can use a lower quality resampling method:
-
-
-Change:
-
-```defaults.pcm.rate_converter "speexrate_medium"```
-
-To:
-
-```defaults.pcm.rate_converter "speexrate"```
-
-
-If upsampling and/or giving your DAC a little bit of digital headroom does not improve the overall sound quality, get a beter DAC.
-
-
-### Bonus Points!!!
-
-<b>!!!WARNING!!!</b>
-
-These overclock setting WILL <b>void your warranty</b> and eat your cat(s). I am not responsible for any damages, demon possessions or unwanted pregnancies.
-
-
-That being said I've had good results with the following to eliminate audio dropouts with just a small heatsink and a case with no active cooling or ventilation. (Temps never got over 57c and it never throttled during a 60 min stress test, your mileage may vary of course.)
-
-```
-boot_delay=1
-force_turbo=1
-arm_freq=1100
-over_voltage=8
-sdram_over_voltage=8
-core_freq=500
-sdram_freq=500
-```
 
 ### Credits
 
