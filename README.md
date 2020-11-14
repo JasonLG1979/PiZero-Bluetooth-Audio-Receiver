@@ -594,7 +594,7 @@ pcm.!default {
 
     # Example:
     # hifiberry dac+ zero on a pi zero.
-    # slave.pcm "hqstereo20:FORMAT=S32_LE,BUFFER_PERIOD_TIME=250000,VOL_MIN_DB=-48.0"
+    # slave.pcm "hqstereo20:FORMAT=S32_LE,BUFFER_PERIOD_TIME=250000,VOL_MIN_DB=-48.0,VOL_NAME=PCM"
 
     slave.pcm "hqstereo20"
 }
